@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
 import path from "path";
+import fs from 'fs';
 import { fileURLToPath } from "url";
 
 import eventRoutes from "./routes/eventRoutes.js";
@@ -51,7 +52,10 @@ app.use("/api/calendars", calendarRoutes);
 // DB connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.error('MongoDB connection error:', err && err.message ? err.message : err);
+    console.error('Make sure your MONGO_URI is correct and that Atlas allows connections from this host IP.');
+  });
 
 // Serve frontend build in production
 const __filename = fileURLToPath(import.meta.url);
@@ -64,13 +68,17 @@ app.get('/api/health', (req, res) => {
 
 if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(clientBuildPath));
+  if (fs.existsSync(clientBuildPath)) {
+    app.use(express.static(clientBuildPath));
 
-  // Fallback for SPA routes: use an app-level handler (no path pattern)
-  // to avoid path-to-regexp parsing issues on some hosts (e.g., Render).
-  app.use((req, res) => {
-    res.sendFile(path.join(clientBuildPath, "index.html"));
-  });
+    // Fallback for SPA routes: use an app-level handler (no path pattern)
+    // to avoid path-to-regexp parsing issues on some hosts (e.g., Render).
+    app.use((req, res) => {
+      res.sendFile(path.join(clientBuildPath, "index.html"));
+    });
+  } else {
+    console.warn(`Frontend build not found at ${clientBuildPath}. Skipping static asset serving.`);
+  }
 }
 
 const PORT = process.env.PORT || 5000;
