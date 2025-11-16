@@ -66,8 +66,9 @@ if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(clientBuildPath));
 
-  // Use a wildcard path compatible with path-to-regexp used by Express/router
-  app.get('/*', (req, res) => {
+  // Fallback for SPA routes: use an app-level handler (no path pattern)
+  // to avoid path-to-regexp parsing issues on some hosts (e.g., Render).
+  app.use((req, res) => {
     res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 }
