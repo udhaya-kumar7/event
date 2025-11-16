@@ -8,6 +8,8 @@ import axios from 'axios';
 // ensure axios sends cookies for protected endpoints
 axios.defaults.withCredentials = true;
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+// Use API_BASE as axios default so code can use relative paths or axios() directly.
+axios.defaults.baseURL = API_BASE;
 
 // Automatic refresh flow: on 401 try to refresh the access token using the refresh cookie
 axios.interceptors.response.use(

@@ -15,7 +15,31 @@ dotenv.config();
 const app = express();
 
 // CORS
-app.use(cors({ origin: process.env.FRONTEND_BASE_URL || 'http://localhost:5173', credentials: true }));
+// Support a comma-separated list in FRONTEND_BASE_URL (or FRONTEND_BASE_URLS) so deployments
+// can set multiple allowed origins. If not provided, include localhost dev origins and
+// the typical Vercel frontend domain (useful when deploying backend without env set).
+const rawOrigins = process.env.FRONTEND_BASE_URL || process.env.FRONTEND_BASE_URLS || '';
+const extraDefault = 'https://event-f6z3-2dynpnoie-udhaya-kumar-js-projects.vercel.app';
+const allowedOrigins = rawOrigins
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+if (allowedOrigins.length === 0) {
+  allowedOrigins.push('http://localhost:5173', 'http://localhost:3000', extraDefault);
+}
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like curl, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    return callback(new Error(msg), false);
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -32,6 +56,11 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Serve frontend build in production
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Health endpoint for quick checks
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', env: process.env.NODE_ENV || 'development' });
+});
 
 if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../frontend/dist");

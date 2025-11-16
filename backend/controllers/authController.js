@@ -116,8 +116,13 @@ export const signup = async (req, res) => {
     await user.save();
 
     // Set cookies
-    res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'lax', maxAge: 15 * 60 * 1000 });
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
+    };
+    res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 });
+    res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     return res.status(201).json({ message: 'User created', user: { id: user._id, email: user.email } });
   } catch (err) {
@@ -144,8 +149,13 @@ export const login = async (req, res) => {
     user.refreshTokens.push({ token: refreshToken, createdAt: new Date() });
     await user.save();
 
-    res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'lax', maxAge: 15 * 60 * 1000 });
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
+    };
+    res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 });
+    res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     return res.status(200).json({ message: 'Logged in', user: { id: user._id, email: user.email } });
   } catch (err) {
@@ -188,7 +198,12 @@ export const refresh = async (req, res) => {
     if (!found) return res.status(401).json({ message: 'Invalid refresh token' });
 
     const newAccess = signAccessToken(user);
-    res.cookie('accessToken', newAccess, { httpOnly: true, sameSite: 'lax', maxAge: 15 * 60 * 1000 });
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
+    };
+    res.cookie('accessToken', newAccess, { ...cookieOptions, maxAge: 15 * 60 * 1000 });
     return res.status(200).json({ message: 'Token refreshed' });
   } catch (err) {
     console.error('refresh error', err);
@@ -212,9 +227,13 @@ export const logout = async (req, res) => {
       }
     }
 
-    // Clear cookies
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    // Clear cookies (match sameSite/secure from when they were set)
+    const clearOpts = {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
+    };
+    res.clearCookie('accessToken', clearOpts);
+    res.clearCookie('refreshToken', clearOpts);
     return res.status(200).json({ message: 'Logged out' });
   } catch (err) {
     console.error('logout error', err);
