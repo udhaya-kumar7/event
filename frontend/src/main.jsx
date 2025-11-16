@@ -7,8 +7,14 @@ import axios from 'axios';
 
 // ensure axios sends cookies for protected endpoints
 axios.defaults.withCredentials = true;
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-// Use API_BASE as axios default so code can use relative paths or axios() directly.
+// Determine API base URL:
+// 1. If VITE_API_BASE is set and non-empty, use it (production builds on Vercel/Render can set this).
+// 2. Otherwise, if running in the browser use the current origin (same-origin deploy where backend serves the frontend).
+// 3. Fallback to localhost for local development.
+const envApiBase = import.meta.env.VITE_API_BASE;
+const API_BASE = envApiBase && envApiBase !== ''
+  ? envApiBase
+  : (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000');
 axios.defaults.baseURL = API_BASE;
 
 // Automatic refresh flow: on 401 try to refresh the access token using the refresh cookie
