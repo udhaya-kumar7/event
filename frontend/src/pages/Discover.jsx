@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import Hero from "../components/Hero";
 import EventCard from "../components/EventCard";
+import SelectDropdown from '../components/SelectDropdown';
 
 const categories = [
   { id: 'music', title: 'Music', img: '/images/event1.jpg' },
@@ -19,6 +20,8 @@ const Discover = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState('Newest');
+  const [dateFilter, setDateFilter] = useState('Any date');
   const location = useLocation();
 
   useEffect(() => {
@@ -104,16 +107,16 @@ const Discover = () => {
             <div className="flex items-center justify-between mb-6 gap-4">
               <div className="flex items-center gap-3">
                 <div className="text-sm text-gray-300">Sort</div>
-                <select className="bg-transparent px-3 py-2 rounded text-sm text-gray-200 appearance-none border border-white/10 focus:outline-none focus:ring-2 focus:ring-red-500 backdrop-blur-sm">
-                  <option>Newest</option>
-                  <option>Popular</option>
-                  <option>Nearest</option>
-                </select>
-                <select className="bg-transparent px-3 py-2 rounded text-sm text-gray-200 appearance-none border border-white/10 focus:outline-none focus:ring-2 focus:ring-red-500 backdrop-blur-sm">
-                  <option>Any date</option>
-                  <option>Today</option>
-                  <option>This week</option>
-                </select>
+                <SelectDropdown
+                  options={[{ value: 'Newest', label: 'Newest' }, { value: 'Popular', label: 'Popular' }, { value: 'Nearest', label: 'Nearest' }]}
+                  value={sort}
+                  onChange={setSort}
+                />
+                <SelectDropdown
+                  options={[{ value: 'Any date', label: 'Any date' }, { value: 'Today', label: 'Today' }, { value: "This week", label: 'This week' }]}
+                  value={dateFilter}
+                  onChange={setDateFilter}
+                />
               </div>
 
               <div className="text-sm text-gray-400">{filtered.length} results</div>
