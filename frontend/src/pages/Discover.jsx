@@ -12,7 +12,7 @@ const categories = [
   { id: 'wellness', title: 'Wellness', img: '/images/event5.jpg' }
 ];
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+// Use relative API paths so production builds hit same origin or axios.defaults.baseURL
 
 const Discover = () => {
   const [events, setEvents] = useState([]);
@@ -35,7 +35,7 @@ const Discover = () => {
         // try to get current user id (optional)
         let meId = null;
         try {
-          const me = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+          const me = await fetch('/api/auth/me', { credentials: 'include' });
           if (me.ok) {
             const u = await me.json();
             meId = u._id || u.id || null;
@@ -43,7 +43,7 @@ const Discover = () => {
           }
         } catch (ignore) {}
 
-        const res = await fetch(`${API_BASE}/api/events`);
+        const res = await fetch('/api/events');
         const data = await res.json();
         // if we have a current user, hide their events from "All results"
         if (meId) {

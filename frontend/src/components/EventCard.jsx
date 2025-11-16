@@ -10,12 +10,11 @@ const EventCard = ({ event }) => {
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
     let mounted = true;
 
     const load = async () => {
       try {
-        const me = await axios.get(`${API_BASE}/api/auth/me`, { withCredentials: true });
+        const me = await axios.get('/api/auth/me', { withCredentials: true });
         if (me.status === 200 && me.data) {
           setIsAuth(true);
         }
@@ -24,7 +23,7 @@ const EventCard = ({ event }) => {
       }
 
       try {
-        const url = `${API_BASE}/api/events/subscription-status?eventId=${event._id}${!isAuth && email ? `&email=${encodeURIComponent(email)}` : ''}`;
+        const url = `/api/events/subscription-status?eventId=${event._id}${!isAuth && email ? `&email=${encodeURIComponent(email)}` : ''}`;
         const res = await axios.get(url, { withCredentials: true });
         if (mounted) setSubscribed(res.data.subscribed);
       } catch (err) {
@@ -45,10 +44,9 @@ const EventCard = ({ event }) => {
 
     setLoading(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
       const body = { eventId: event._id };
       if (!isAuth) body.email = email;
-      const res = await axios.post(`${API_BASE}/api/events/subscribe`, body, { withCredentials: true });
+      const res = await axios.post('/api/events/subscribe', body, { withCredentials: true });
       setShowToast(res.data.message || 'Subscribed');
       setSubscribed(true);
       setEmail('');

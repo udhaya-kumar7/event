@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import CalendarSection from "../components/CalendarSection";
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+// Use relative API paths so production builds hit same origin or axios.defaults.baseURL
 
 const CalendarsPage = () => {
   const navigate = useNavigate();
@@ -20,16 +20,16 @@ const CalendarsPage = () => {
     const loadCalendars = async () => {
       setLoading(true);
       setError(null);
-      try {
+        try {
         // attempt to get current user so we can exclude their calendars from "All Calendars"
         let meId = null;
         try {
-          const me = await axios.get(`${API_BASE}/api/auth/me`, { withCredentials: true });
+          const me = await axios.get('/api/auth/me', { withCredentials: true });
           meId = me.data?._id || me.data?.id || null;
         } catch (ignore) {}
 
-        const p1 = axios.get(`${API_BASE}/api/calendars`, { withCredentials: true });
-        const p2 = axios.get(`${API_BASE}/api/calendars/user/list`, { withCredentials: true }).catch((err) => {
+        const p1 = axios.get('/api/calendars', { withCredentials: true });
+        const p2 = axios.get('/api/calendars/user/list', { withCredentials: true }).catch((err) => {
           if (err.response && err.response.status === 401) return { data: [] };
           throw err;
         });
@@ -58,10 +58,10 @@ const CalendarsPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE}/api/calendars/${id}`, { withCredentials: true });
+      await axios.delete(`/api/calendars/${id}`, { withCredentials: true });
       // refresh lists from server to ensure consistent state
-      const p1 = axios.get(`${API_BASE}/api/calendars`, { withCredentials: true });
-      const p2 = axios.get(`${API_BASE}/api/calendars/user/list`, { withCredentials: true }).catch((err) => {
+      const p1 = axios.get('/api/calendars', { withCredentials: true });
+      const p2 = axios.get('/api/calendars/user/list', { withCredentials: true }).catch((err) => {
         if (err.response && err.response.status === 401) return { data: [] };
         throw err;
       });

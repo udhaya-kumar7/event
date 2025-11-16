@@ -24,8 +24,7 @@ const ResetPassword = () => {
 		if (!password) return setError('Enter a new password');
 		if (password !== confirm) return setError('Passwords do not match');
 		try {
-			const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-			const resp = await axios.post(`${API_BASE}/api/auth/reset-password`, { userId, token, password }, { withCredentials: true });
+			const resp = await axios.post('/api/auth/reset-password', { userId, token, password }, { withCredentials: true });
 			setSuccess('Password reset successful — please sign in');
 			setTimeout(() => navigate('/login'), 1500);
 		} catch (err) {

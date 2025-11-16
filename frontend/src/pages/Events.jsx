@@ -11,7 +11,7 @@ const defaultImages = [
   "/images/event5.jpg",
 ];
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+// Use relative API paths so production builds hit the same origin or axios.defaults.baseURL
 
 const Events = () => {
   const [showForm, setShowForm] = useState(false);
@@ -43,7 +43,7 @@ const Events = () => {
 
   const fetchCalendars = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/calendars/user/list`, { credentials: 'include' });
+      const res = await fetch('/api/calendars/user/list', { credentials: 'include' });
       if (res.status === 401) return setCalendars([]);
       const data = await res.json();
       setCalendars(data || []);
@@ -56,7 +56,7 @@ const Events = () => {
   const fetchEvents = async () => {
     try {
       // fetch only authenticated user's events
-      const response = await fetch(`${API_BASE}/api/events/me`, { credentials: 'include' });
+      const response = await fetch('/api/events/me', { credentials: 'include' });
       if (response.status === 401) {
         // not authenticated -> treat as no events
         setEvents([]);
@@ -147,7 +147,7 @@ const Events = () => {
 
       if (formData.calendarId) payloadBody.calendarId = formData.calendarId;
 
-      const response = await fetch(`${API_BASE}/api/events`, {
+      const response = await fetch('/api/events', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

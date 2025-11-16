@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+// Use relative API paths so production builds hit same origin or axios.defaults.baseURL
 
 const COLOR_OPTIONS = [
   { name: "Pink", value: "#ec4899" },
@@ -51,7 +51,7 @@ const CalendarsCreate = () => {
     };
 
     // Post to backend
-    axios.post(`${API_BASE}/api/calendars`, payload, { withCredentials: true })
+    axios.post('/api/calendars', payload, { withCredentials: true })
       .then((res) => {
         console.log('Calendar created:', res.data);
         navigate('/calendars');

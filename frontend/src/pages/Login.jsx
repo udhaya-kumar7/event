@@ -13,8 +13,7 @@ const Login = () => {
     (async () => {
       try {
         if (!email || !password) return setError("Please provide email and password");
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-  const resp = await axios.post(`${API_BASE}/api/auth/signup`, { email, password }, { withCredentials: true });
+  const resp = await axios.post('/api/auth/signup', { email, password }, { withCredentials: true });
         if (resp.data && resp.data.user) {
           if (!localStorage.getItem("clientId")) {
             const id = `client_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
@@ -34,8 +33,7 @@ const Login = () => {
     (async () => {
       try {
         if (!email || !password) return setError("Please provide email and password");
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-  const resp = await axios.post(`${API_BASE}/api/auth/login`, { email, password }, { withCredentials: true });
+  const resp = await axios.post('/api/auth/login', { email, password }, { withCredentials: true });
         if (resp.data && resp.data.user) {
           if (!localStorage.getItem("clientId")) {
             const id = `client_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
@@ -61,8 +59,7 @@ const Login = () => {
     const emailToUse = prompt('Enter your account email for password reset:');
     if (!emailToUse) return;
     try {
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-  const resp = await axios.post(`${API_BASE}/api/auth/request-reset`, { email: emailToUse }, { withCredentials: true });
+  const resp = await axios.post('/api/auth/request-reset', { email: emailToUse }, { withCredentials: true });
       if (resp.data?.resetLink) {
         alert('Reset link (dev): ' + resp.data.resetLink);
       } else {

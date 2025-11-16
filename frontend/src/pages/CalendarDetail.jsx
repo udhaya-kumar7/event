@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+// Use relative API paths so production builds hit same origin or axios.defaults.baseURL
 
 const CalendarDetail = () => {
   const { id } = useParams();
@@ -24,9 +24,9 @@ const CalendarDetail = () => {
     setLoading(true);
     setError(null);
 
-    const pCal = axios.get(`${API_BASE}/api/calendars/${id}`, { withCredentials: true });
+    const pCal = axios.get(`/api/calendars/${id}`, { withCredentials: true });
 
-    const loadEvents = () => axios.get(`${API_BASE}/api/events/calendar/${id}`, { withCredentials: true });
+    const loadEvents = () => axios.get(`/api/events/calendar/${id}`, { withCredentials: true });
 
     Promise.all([pCal, loadEvents()])
       .then(async ([calRes, evRes]) => {
@@ -36,7 +36,7 @@ const CalendarDetail = () => {
         // try to get current user and separate events
         let meId = null;
         try {
-          const me = await axios.get(`${API_BASE}/api/auth/me`, { withCredentials: true });
+          const me = await axios.get('/api/auth/me', { withCredentials: true });
           meId = me.data?._id || me.data?.id || null;
           setCurrentUserId(meId);
         } catch (e) {
@@ -65,7 +65,7 @@ const CalendarDetail = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/api/events/calendar/${id}`, { withCredentials: true });
+      const res = await axios.get(`/api/events/calendar/${id}`, { withCredentials: true });
       setEvents(res.data || []);
     } catch (err) {
       console.error('Failed to refresh events', err);
@@ -148,7 +148,7 @@ const CalendarDetail = () => {
     };
 
     try {
-      const res = await axios.post(`${API_BASE}/api/events`, payload, { withCredentials: true });
+      const res = await axios.post('/api/events', payload, { withCredentials: true });
       toast.success('Event created');
       setShowCreateModal(false);
       // refresh events
