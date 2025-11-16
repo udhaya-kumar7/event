@@ -104,12 +104,12 @@ const Discover = () => {
             <div className="flex items-center justify-between mb-6 gap-4">
               <div className="flex items-center gap-3">
                 <div className="text-sm text-gray-300">Sort</div>
-                <select className="bg-white/6 px-3 py-2 rounded text-sm text-gray-200 appearance-none border border-white/10 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <select className="bg-transparent px-3 py-2 rounded text-sm text-gray-200 appearance-none border border-white/10 focus:outline-none focus:ring-2 focus:ring-red-500 backdrop-blur-sm">
                   <option>Newest</option>
                   <option>Popular</option>
                   <option>Nearest</option>
                 </select>
-                <select className="bg-white/6 px-3 py-2 rounded text-sm text-gray-200 appearance-none border border-white/10 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <select className="bg-transparent px-3 py-2 rounded text-sm text-gray-200 appearance-none border border-white/10 focus:outline-none focus:ring-2 focus:ring-red-500 backdrop-blur-sm">
                   <option>Any date</option>
                   <option>Today</option>
                   <option>This week</option>
